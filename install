@@ -5,7 +5,7 @@ PROG_PATH="/data/app/$PROG"
 MSG_PREFIX=" *"
 echo "$MSG_PREFIX start install $PROG"
 
-service $PROG stop
+systemctl stop $PROG.service
 
 if [ -d "$PROG_PATH" ] ; then
         rm -rf $PROG_PATH
@@ -14,38 +14,29 @@ fi
 mkdir -p $PROG_PATH
 mkdir -p $PROG_PATH/logs
 
-cp -v -n -r lib $PROG_PATH/lib
-cp -v -n -r lib $PROG $PROG_PATH/
+cp -v -n -r lib $PROG.service $PROG_PATH/
 
-if [ -f "/etc/init.d/$PROG" ] ; then
-	echo "$MSG_PREFIX /etc/init.d/$PROG  already exist delete"
-	rm -f /etc/init.d/$PROG
-fi
-
-ln -s $PROG_PATH/$PROG /etc/init.d/$PROG
+ln -s $PROG_PATH/$PROG.service /etc/systemd/system/$PROG.service
 
 #chmod 755 $PROG_PATH/bin/$PROG
 chmod 755 $PROG_PATH/$PROG
 chmod 777 $PROG_PATH/logs
-chmod 755 /etc/init.d/$PROG
 
-if [ -x "/usr/bin/node" ] ; then
+if [ -x "/data/app/nodejs/bin/node" ] ; then
 	echo "$MSG_PREFIX installed nodejs"
 else
 	echo "$MSG_PREFIX not install nodejs"
 	exit 1
 fi
 
-if [ -f "/etc/rc0.d/K50$PROG" ] ; then
-	echo "$MSG_PREFIX not need add start for boot"
-else
-	echo "$MSG_PREFIX add start for boot"
-	update-rc.d  $PROG defaults 50
-fi
+systemctl daemon-reload
 
+systemctl enable $PROG.service
+
+systemctl start $PROG.service
 
 echo "$MSG_PREFIX install sucess $PROG"
 
-service $PROG start
+systemctl start $PROG.service
 
 

@@ -1,0 +1,12 @@
+[Unit]
+Description=photos service
+After=syslog.target
+
+[Service]
+ExecStart=/data/app/nodejs/bin/node /data/app/photos/lib/main.js 10003 /data/movie /data/app/photos/logs/photos.pid                                                                                                             
+#ExecStop=/data/app/platform/platform stop
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

@@ -18,46 +18,16 @@ PROG_BASE="/data/app/$PROG"
 PROG_PATH="$PROG_BASE/lib/main.js" #::# Not need, but sometimes helpful (if $PROG resides in /opt for example).
 PROG_PID="$PROG_BASE/logs/$PROG.pid"
 PROG_LOG="$PROG_BASE/logs/$PROG.log"
-PROG_ARGS="10003 /hdd/photos $PROG_PID"
+PROG_ARGS="10003 /data/movie $PROG_PID"
 PROG_NODE="/data/app/nodejs/bin/node"
-PROG_USER="linaro"
 
 start() {
-	PROG_STATUS=0
-#check process status
-    if [ -e "$PROG_PID" ]; then
-		for line in `cat $PROG_PID`
-		do
-			count=`ps -ef |grep $line |grep -v "grep" |wc -l`
-    		if [ $count -gt 0 ]; then
-        		PROG_STATUS=1
-       			break;
-    		fi
-		done
-	fi
-
-	if [ $PROG_STATUS -eq 1 ]; then
-		## Program is running, exit with error.
-		echo "$MSG_PREFIX $PROG is currently running..."
-		exit 1
-    else
-        su -c "$PROG_NODE $PROG_PATH $PROG_ARGS >> $PROG_LOG 2>&1 &" $PROG_USER
+        $PROG_NODE $PROG_PATH $PROG_ARGS
         echo "$MSG_PREFIX $PROG started"
-    fi
 }
 
 stop() {
-    if [ -e "$PROG_PID" ]; then
-        ## Program is running, so stop it
-      	kill -9 $(cat $PROG_PID)
-		rm -rf $PROG_PID
-		sleep 1
        	echo "$MSG_PREFIX $PROG stopped"
-    else
-        ## Program is not running, exit with error.
-        echo "$MSG_PREFIX $PROG not started"
-        exit 1
-    fi
 }
 
 
